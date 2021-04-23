@@ -1,6 +1,7 @@
 ﻿using Assets.Scripts.Network;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Assets.Scripts
 {
@@ -9,13 +10,15 @@ namespace Assets.Scripts
         [SerializeField] private string ssid;
         [SerializeField] private string password;
 
+        [SerializeField] private Text debug;
+
         private IEnumerator Start()
         {
-            NetworkAdapter.StopHotspot();
-            yield return new WaitForSecondsRealtime(5);
-            NetworkAdapter.StartHotspot(ssid, password);
-            yield return new WaitForSecondsRealtime(10);
+            var ip = NetworkAdapter.StartHotspot(ssid, password);
+            debug.text = ip;
+            yield return new WaitForSecondsRealtime(30);
             NetworkAdapter.StopHotspot();
         }
+
     }
 }
