@@ -1,4 +1,6 @@
-﻿namespace Assets.Scripts.Extensions
+﻿using System.Linq;
+
+namespace Assets.Scripts.Extensions
 {
     public static class StringExtensions
     {
@@ -9,7 +11,7 @@
             {
                 if (s.Contains("SSID"))
                 {
-                    return s.Replace("SSID", "").Replace(":", "").Trim(' ');
+                    return s.Replace("SSID", " ").Replace(":", " ").Trim(' ').Normalized();
                 }
             }
 
@@ -23,10 +25,18 @@
             {
                 if (s.Contains("Content"))
                 {
-                    return s.Replace("Key Content", "").Replace(":", "").Trim(' ');
+                    var result = s.Replace("Key Content", " ").Replace(":", " ").Trim(' ').Normalized();
+                    return result;
                 }
             }
             return string.Empty;
+        }
+
+        private static string Normalized(this string str)
+        {
+            var chars = str.ToCharArray().ToList();
+            chars.Remove(chars.Last());
+            return new string(chars.ToArray());
         }
     }
 }

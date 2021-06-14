@@ -1,4 +1,5 @@
-﻿using Assets.Scripts.Network.WIFI;
+﻿using Assets.Scripts.Network;
+using Assets.Scripts.QR.Generator;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
@@ -11,17 +12,16 @@ namespace Assets.Scripts
         [SerializeField] private string password;
 
         [SerializeField] private Text debug;
+        [SerializeField] private Image qr;
 
         private IEnumerator Start()
         {
-            /*    var ip = NetworkAdapter.StartHotspot(ssid, password);
-                debug.text = ip;
-                yield return new WaitForSecondsRealtime(30);
-                NetworkAdapter.StopHotspot();*/
-            AndroidWiFiController wiFiController = new AndroidWiFiController();
-            wiFiController.Enable();
-            wiFiController.Connect("Meow", "17052013");
             yield return null;
+            var profile = NetworkAdapter.GetProfile();
+            var msg = $"{profile.SSID}:{profile.Key}";
+            debug.text = msg;
+            Debug.Log(debug.text);
+            qr.sprite = QRGenerator.Generate(msg);
         }
 
     }

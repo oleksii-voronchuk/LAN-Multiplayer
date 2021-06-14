@@ -1,4 +1,6 @@
-﻿using System.Collections;
+﻿using Assets.Scripts.Network;
+using Assets.Scripts.Network.WIFI;
+using System.Collections;
 using System.Linq;
 using TMPro;
 using UnityEngine;
@@ -17,6 +19,7 @@ namespace Assets.Scripts.QR.Reader
         private WebCamTexture webCamTexture;
         private CodeReader reader;
         private string foundMessage;
+        private AndroidWiFiController wifiController = new AndroidWiFiController();
 
         private void OnEnable()
         {
@@ -32,6 +35,7 @@ namespace Assets.Scripts.QR.Reader
 
         private IEnumerator Start()
         {
+            wifiController.Enable();
             confirmButton.gameObject.SetActive(false);
             rescanButton.gameObject.SetActive(false);
 
@@ -47,7 +51,6 @@ namespace Assets.Scripts.QR.Reader
 
             reader = new CodeReader();
             foundMessage = null;
-
             StartCoroutine(TryReadCode());
         }
 
@@ -77,14 +80,16 @@ namespace Assets.Scripts.QR.Reader
 
         private void Confirm()
         {
-            if (foundMessage.StartsWith("http"))
+            var strings = foundMessage.Split(':');
+            var msg = string.Empty;
+            foreach (var s in strings)
             {
-                Application.OpenURL(foundMessage);
+                msg += $":{s}:\n";
             }
-            else
-            {
-                Application.OpenURL("http://www.google.com/search?q=" + foundMessage);
-            }
+
+            var profile = new WLANProfile(strings[0], strings[1]);
+            wifiController.Connect(profile.SSID, profile.Key);
+            resultTMP.text = msg;
         }
 
         private void Rescan()

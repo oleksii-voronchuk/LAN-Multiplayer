@@ -38,7 +38,9 @@ namespace Assets.Scripts.Network
                 CreateNoWindow = true
             };
 
-            return Process.Start(processStartInfo);
+            var process = Process.Start(processStartInfo);
+            process?.StandardInput.WriteLine("CHCP 65001");
+            return process;
         }
 
         private static void StopCommandProcess(Process commandProcess)
@@ -63,6 +65,7 @@ namespace Assets.Scripts.Network
             var commandProcess = StartCommandProcess();
             commandProcess.StandardInput.WriteLine("cls");
             commandProcess.StandardInput.WriteLine("netsh wlan show interfaces");
+            commandProcess.StandardInput.WriteLine("DHCP");
             commandProcess.StandardInput.Close();
             profile.SSID = commandProcess.StandardOutput.ReadToEnd().FindSSID();
             StopCommandProcess(commandProcess);
